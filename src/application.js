@@ -1,4 +1,6 @@
 JBNLayout.Application = function(node, options) {
+	window.layout = this;
+	
 	var self = this,
 		i, len, shortcut,
 	
@@ -6,7 +8,7 @@ JBNLayout.Application = function(node, options) {
 		self.withSelected('deselect');
 	};
 	
-	this.grid = 20;
+	this.grid = 10;
 	
 	if (node) {
 		this.node = node;
@@ -17,11 +19,19 @@ JBNLayout.Application = function(node, options) {
 		JBNLayout.Helpers.addClassName(this.view.node, 'superview');
 	}
 	
-	if (JBNLayout.Shortcut) {
+	if (JBNLayout.Shortcuts) {
 		this.shortcuts = new JBNLayout.Shortcuts();
 		
-		this.shortcuts.add('delete', function(e) {
+		this.shortcuts.add('keydown', 'delete', function(e) {
 			self.withSelected('remove');
+		});
+		
+		this.shortcuts.add('keydown', 'space', function(e) {
+			self.view.lock = true;
+		});
+		
+		this.shortcuts.add('keyup', 'space', function(e) {
+			self.view.lock = false;
 		});
 	}
 	
@@ -50,8 +60,6 @@ JBNLayout.Application = function(node, options) {
 	}
 	
 	document.addEventListener('mousedown', mousedown, false);
-	
-	window.layout = this;
 }
 
 JBNLayout.Application.prototype = {

@@ -22,6 +22,8 @@ JBNLayout.Shortcuts = function() {
 				key = 'Up';
 			} else if (key === 'down') {
 				key = 'Down';
+			} else if (key === 'space') {
+				key = '0020';
 			}
 			
 			return key;
@@ -45,15 +47,11 @@ JBNLayout.Shortcuts = function() {
 		modifiers.alt = e.altKey;
 	},
 	
-	keydown = function(e) {
-		var shortcut;
-		
-		getModifier(e);
-		
+	key = function(e) {
 		for (i=0, len=self.shortcuts.length; i<len; i++) {
 			shortcut = self.shortcuts[i];
 			
-			if (shortcut.key === e.keyIdentifier.replace('U+', '')) {
+			if (shortcut.type === e.type && shortcut.key === e.keyIdentifier.replace('U+', '')) {
 				if (!shortcut.modifier || (shortcut.modifier && modifiers[shortcut.modifier])) {
 					shortcut.action(e);
 					e.stopPropagation();
@@ -64,15 +62,11 @@ JBNLayout.Shortcuts = function() {
 		}
 		
 		return false;
-	},
-	
-	keyup = function(e) {
-		getModifier(e);
 	};
 	
 	this.shortcuts = [];	
 	
-	this.add = function(combination, action) {
+	this.add = function(type, combination, action) {
 		var shortcut = {};
 		
 		combination = combination.split('+');
@@ -84,6 +78,7 @@ JBNLayout.Shortcuts = function() {
 			shortcut.key = convert(combination[0]);
 		}
 		
+		shortcut.type = type;
 		shortcut.action = action;
 		self.shortcuts.push(shortcut);
 		
@@ -94,6 +89,6 @@ JBNLayout.Shortcuts = function() {
 		self.shortcuts.splice(self.shortcuts.indexOf(shortcut), 1);
 	}
 	
-	document.addEventListener('keydown', keydown, false);
-	document.addEventListener('keyup', keyup, false);
+	document.addEventListener('keydown', key, false);
+	document.addEventListener('keyup', key, false);
 }

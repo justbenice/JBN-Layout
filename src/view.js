@@ -22,6 +22,7 @@ JBNLayout.View = function(options) {
 		
 		self.textarea.setSelectionRange(cursor, cursor);
 		self.textarea.addEventListener('mousedown', stopPropagation);
+		self.textarea.addEventListener('keydown', stopPropagation);
 	},
 	
 	blur = function(e) {
@@ -30,6 +31,7 @@ JBNLayout.View = function(options) {
 		
 		self.textarea.style.display = 'none';
 		self.textarea.removeEventListener('mousedown', stopPropagation);
+		self.textarea.removeEventListener('keydown', stopPropagation);
 	},
 
 	mousedown = function(e) {
@@ -40,6 +42,10 @@ JBNLayout.View = function(options) {
 			nodes = Array.prototype.slice.call(nodes);
 			return nodes.indexOf(e.target) > -1;
 		};
+		
+		if (self.superview && self.superview.lock) {
+			return;
+		}
 		
 		if (e.target !== self.node) {
 			if (!targetIsDescendant()) {
@@ -61,6 +67,8 @@ JBNLayout.View = function(options) {
 				width: self.width,
 				height: self.height
 			};
+			
+			self.resizeHint.style.display = 'block';
 		}
 	
 		if (!self.resizing && options.draggable) {
@@ -100,8 +108,15 @@ JBNLayout.View = function(options) {
 	},
 
 	mouseup = function(e) {
-		if (!(self.dragging || self.resizing)) {
+		var preventLocked = e.type === 'keydown' &&
+			((self.superview && self.superview.lock) || self.lock);
+		
+		if (!(self.dragging || self.resizing) || preventLocked) {
 			return;
+		}
+		
+		if (self.resizable) {
+			self.resizeHint.style.display = 'none';
 		}
 	
 		self.dragging = self.resizing = false;
@@ -116,12 +131,21 @@ JBNLayout.View = function(options) {
 	drop = function(e) {
 		e.preventDefault();
 		
+		self.add({
+			x: e.clientX,
+			y: e.clientY,
+			width: 100,
+			height: 100,
+			draggable: true,
+			editable: true
+		});
+		
 		return false;
 	},
 
 	snap = function() {
 		var snap = function(v) {
-			var grid = layout.grid || 20;
+			var grid = window.layout.grid || 20;
 			return Math.floor(v / grid) * grid;
 		}
 	
@@ -138,6 +162,7 @@ JBNLayout.View = function(options) {
 
 	this.x = 0;
 	this.y = 0;
+	this.z = 0;
 	this.width = 0;
 	this.height = 0;
 	this.editable = false;
@@ -153,8 +178,10 @@ JBNLayout.View = function(options) {
 	this.node = document.createElement('div');
 	this.node.className = 'view';
 	
+	this.lock = false;
 	this.superview = null;
 	this.views = [];
+	this.depth = 0;
 
 	this.dragging = false;
 	this.resizing = false;
@@ -173,6 +200,15 @@ JBNLayout.View = function(options) {
 	}
 
 	if (this.draggable || this.resizable) {
+		if (this.resizable) {
+			this.resizeHint = document.createElement('div');
+			this.resizeHint.className = 'resize-hint';
+			this.resizeHint.style.display = 'none';
+			
+			this.node.setAttribute('data-resizable', true);
+			this.node.appendChild(this.resizeHint);
+		}
+		
 		this.node.addEventListener('mousedown', mousedown, false);
 		document.addEventListener('mousemove', mousemove, false);
 		document.addEventListener('mouseup', mouseup, false);
@@ -185,9 +221,13 @@ JBNLayout.View = function(options) {
 	}
 	
 	this.add = function(options) {
-		var view = new JBNLayout.View(options);
+		var view;
 		
+		options.z = self.depth++;
+		
+		view = new JBNLayout.View(options);		
 		view.superview = self;		
+		
 		self.views.push(view);
 		self.node.appendChild(view.node);
 		
@@ -196,8 +236,14 @@ JBNLayout.View = function(options) {
 	
 	this.select = function() {
 		layout.withSelected('deselect');
-		layout.selected = this;
+		layout.selected = self;
+		
+		if (self.superview) {
+			self.z = self.superview.depth++;
+		}
+		
 		self.node.setAttribute('data-selected', true);
+		self.update();
 	}
 	
 	this.deselect = function() {
@@ -212,12 +258,7 @@ JBNLayout.View = function(options) {
 	this.remove = function() {
 		var superviewIndex;
 		
-		if (self.draggable || self.resizable) {
-			self.node.removeEventListener('mousedown', mousedown);
-			document.removeEventListener('mousemove', mousemove);
-			document.removeEventListener('mouseup', mouseup);
-			document.removeEventListener('keydown', mouseup);
-		}
+		self.deselect();
 		
 		if (self.superview) {
 			superviewIndex = self.superview.views.indexOf(self);
@@ -233,15 +274,20 @@ JBNLayout.View = function(options) {
 	
 		self.node.style.left = self.x + 'px';
 		self.node.style.top = self.y + 'px';
+		self.node.style.zIndex = self.z;
 		self.node.style.width = self.width + 'px';
 		self.node.style.height = self.height + 'px';
+		
+		if (self.resizable) {
+			self.resizeHint.innerHTML = [self.width, self.height].join('&times');
+		}
 	}
 	
 	this.toHTML = function() {
 		var html = [], i, len;
 		
 		html.push('<div class="view" style="\
-			left: ' + self.x + 'px; top: ' + self.y + 'px; \
+			left: ' + self.x + 'px; top: ' + self.y + 'px; z-index: ' + self.z + '; \
 			width: ' + self.width + 'px; height: ' + self.height + 'px">');
 		
 		for (i=0, len=self.views.length; i<len; i++) {
@@ -263,6 +309,7 @@ JBNLayout.View = function(options) {
 		json = {
 			x: self.x,
 			y: self.y,
+			z: self.z,
 			width: self.width,
 			height: self.height,
 			views: subviews
