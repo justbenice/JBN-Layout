@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="../css/layout.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="../css/style.css" type="text/css" media="screen" />
+	<script src="../src/layout.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/helpers.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/shortcuts.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/view.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../src/application.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+<div></div>
+
+<script type="text/javascript" charset="utf-8">
+new JBNLayout.Application(document.getElementsByTagName('div')[0], {
+	width: 400,
+	height: 300,
+	draggable: true,
+	resizable: true,
+	droppable: true
+});
+
+layout.view.add({
+	width: 100,
+	height: 100,
+	x: 50,
+	y: 50,
+	editable: true,
+	draggable: true,
+	resizable: true
+});
+</script>
+	
+</body>
+</html>

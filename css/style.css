@@ -1,0 +1,27 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+.layout {
+  width: 100%;
+  height: 100%;
+  background: #cccccc;
+}
+.layout .superview { background: #ffffff; }
+.layout .view {
+  outline: rgba(100, 205, 255, 0.25) 1px solid;
+  outline-offset: 5px;
+}
+.layout .view {
+  font-family: 'Menlo', monospace;
+  font-size: 11px;
+}
+.layout textarea {
+  font-family: 'Menlo', monospace;
+  font-size: 11px;
+}
+.view[data-selected] {
+  outline: #64cdff 1px solid !important;
+  outline-offset: 5px;
+}

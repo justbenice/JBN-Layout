@@ -1,0 +1,76 @@
+Create Application:
+
+JBNLayout.Application(node, {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    draggable: boolean,
+    resizable: boolean,
+    resizeProportionally: boolean,
+    snapSize: boolean,
+    snapPosition: boolean,
+    droppable: boolean
+});
+
+Application methods:
+
+JBNLayout.Application.withSelected
+JBNLayout.Application.withEach
+
+Add View:
+
+JBNLayout.Application.add({
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    editable: boolean,
+    draggable: boolean,
+    resizable: boolean,
+    resizeProportionally: boolean,
+    snapSize: boolean,
+    snapPosition: boolean
+});
+
+View methods:
+
+JBNLayout.View.update
+JBNLayout.View.remove
+JBNLayout.View.select
+JBNLayout.View.deselect
+JBNLayout.View.toHTML
+JBNLayout.View.toJSON
+
+Add Shortcuts:
+
+JBNLayout.Application.shortcuts.add(combination, action);
+
+Usage:
+
+new JBNLayout.Application(node, {
+	width: 400,
+	height: 300
+});
+
+layout.view.add({
+	width: 100,
+	height: 100,
+	x: 50,
+	y: 50,
+	editable: true,
+	draggable: true,
+	resizable: true
+});
+
+layout.view.toHTML();
+
+Result:
+
+<div class="view" style="left: 0px; top: 0px; width: 400px; height: 300px">
+    <div class="view" style="left: 50px; top: 50px; width: 100px; height: 100px"></div>
+</div>
+
+Example:
+
+http://www.dotcanvas.org/
