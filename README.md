@@ -44,3 +44,8 @@ Define shortcuts:
     shortcuts.add('keyup', 'space', function(e) {
         layout.view.lock = false;
     });
+    
+Export:
+
+    layout.toHTML(); // <div class="view" style="left: 0px; top: 0px; z-index: 0; width: 400px; height: 300px"></div>
+    layout.toJSON(); // {"x":0,"y":0,"z":0,"width":400,"height":300,"editable":false,"draggable":true,"resizable":true,"resizeProportionally":false,"droppable":true,"snapSize":true,"snapPosition":false,"views":[],"depth":0,"dragging":false,"resizing":false}
