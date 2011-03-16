@@ -9,6 +9,19 @@
 JBNLayout.Application = function(node, options) {
     var self = this,
         i, len, grid = 10,
+        
+    superview = function(options) {
+        self.view = new JBNLayout.View(self, options);
+        self.node.appendChild(self.view.node);
+
+        JBNLayout.Helpers.addClassName(self.node, 'layout');
+        JBNLayout.Helpers.addClassName(self.view.node, 'superview');
+        
+        self.toHTML = self.view.toHTML;
+        self.toJSON = self.view.toJSON;
+        
+        return self.view;
+    },
 
     mousedown = function(e) {
         self.withSelected('deselect');
@@ -57,8 +70,6 @@ JBNLayout.Application = function(node, options) {
      *  @return {JBNLayout.Application}
     **/
     this.withEach = function(action) {
-        var i, len,
-
         collect = function(view) {
             if (!view) {
                 return;
@@ -75,14 +86,48 @@ JBNLayout.Application = function(node, options) {
 
         return self;
     };
+    
+    this.fromJSON = function(json) {
+        if (typeof json === 'string') {
+            json = JSON.parse(json);
+        }
+        
+        var options, subview,
+        
+        add = function(from, to) {
+            options = JBNLayout.Helpers.clone(from);
+            delete options.views;
+            delete options.content;
+            
+            if (to) {
+                subview = to.add(layout, options);
+            } else {
+                subview = superview(options);
+            }
+            
+            if (from.content) {
+                subview.setContent(from.content);
+            }
+            
+            for (i = 0, len = from.views.length; i < len; i++) {                
+                add(from.views[i], subview);
+            }
+        };
+        
+        if (json.views) {
+            self.withEach(function(view) {
+                view.remove();
+            });
+            
+            self.view.node.parentNode.removeChild(self.view.node);
+            
+            add(json);
+        }
+    };
 
     if (node) {
         this.node = node;
-        this.view = new JBNLayout.View(this, options);
-        this.node.appendChild(this.view.node);
-
-        JBNLayout.Helpers.addClassName(this.node, 'layout');
-        JBNLayout.Helpers.addClassName(this.view.node, 'superview');
+        superview(options);
     }
 
     document.addEventListener('mousedown', mousedown, false);

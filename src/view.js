@@ -27,6 +27,7 @@
 JBNLayout.View = function(layout, options) {
     var self = this,
         dragStart, resStart,
+        resizeHint, content, textarea,
         lock = false,
 
     stopPropagation = function(e) {
@@ -39,29 +40,29 @@ JBNLayout.View = function(layout, options) {
     },
 
     dblclick = function(e) {
-        var cursor = self.textarea.value.length;
+        var cursor = textarea.value.length;
 
-        self.content.style.display = 'none';
+        content.style.display = 'none';
 
-        self.textarea.style.display = 'block';
-        self.textarea.value = self.content.innerHTML;
-        self.textarea.focus();
+        textarea.style.display = 'block';
+        textarea.value = content.innerHTML;
+        textarea.focus();
 
-        self.textarea.setSelectionRange(cursor, cursor);
-        self.textarea.addEventListener('mousedown', stopPropagation);
-        self.textarea.addEventListener('keydown', stopPropagation);
+        textarea.setSelectionRange(cursor, cursor);
+        textarea.addEventListener('mousedown', stopPropagation);
+        textarea.addEventListener('keydown', stopPropagation);
 
         e.stopPropagation();
         e.preventDefault();
     },
 
     blur = function(e) {
-        self.content.style.display = 'block';
-        self.content.innerHTML = self.textarea.value;
+        content.style.display = 'block';
+        content.innerHTML = textarea.value;
 
-        self.textarea.style.display = 'none';
-        self.textarea.removeEventListener('mousedown', stopPropagation);
-        self.textarea.removeEventListener('keydown', stopPropagation);
+        textarea.style.display = 'none';
+        textarea.removeEventListener('mousedown', stopPropagation);
+        textarea.removeEventListener('keydown', stopPropagation);
     },
 
     mousedown = function(e) {
@@ -98,7 +99,7 @@ JBNLayout.View = function(layout, options) {
                 height: self.height
             };
 
-            self.resizeHint.style.display = 'block';
+            resizeHint.style.display = 'block';
         }
 
         if (!self.resizing && options.draggable) {
@@ -146,7 +147,7 @@ JBNLayout.View = function(layout, options) {
         }
 
         if (self.resizable) {
-            self.resizeHint.style.display = 'none';
+            resizeHint.style.display = 'none';
         }
 
         self.dragging = self.resizing = false;
@@ -197,7 +198,7 @@ JBNLayout.View = function(layout, options) {
     this.droppable = false;
     this.snapSize = false;
     this.snapPosition = false;
-
+    
     JBNLayout.Helpers.inject(this, options);
 
     this.node = document.createElement('div');
@@ -211,26 +212,26 @@ JBNLayout.View = function(layout, options) {
     this.resizing = false;
 
     if (this.editable) {
-        this.content = document.createElement('div');
-        this.content.className = 'content';
-        this.content.addEventListener('dblclick', dblclick, false);
+        content = document.createElement('div');
+        content.className = 'content';
+        content.addEventListener('dblclick', dblclick, false);
 
-        this.textarea = document.createElement('textarea');
-        this.textarea.style.display = 'none';
-        this.textarea.addEventListener('blur', blur, false);
+        textarea = document.createElement('textarea');
+        textarea.style.display = 'none';
+        textarea.addEventListener('blur', blur, false);
 
-        this.node.appendChild(this.content);
-        this.node.appendChild(this.textarea);
+        this.node.appendChild(content);
+        this.node.appendChild(textarea);
     }
 
     if (this.draggable || this.resizable) {
         if (this.resizable) {
-            this.resizeHint = document.createElement('div');
-            this.resizeHint.className = 'resize-hint';
-            this.resizeHint.style.display = 'none';
+            resizeHint = document.createElement('div');
+            resizeHint.className = 'resize-hint';
+            resizeHint.style.display = 'none';
 
             this.node.setAttribute('data-resizable', true);
-            this.node.appendChild(this.resizeHint);
+            this.node.appendChild(resizeHint);
         }
 
         this.node.addEventListener('mousedown', mousedown, false);
@@ -354,11 +355,17 @@ JBNLayout.View = function(layout, options) {
         self.node.style.height = self.height + 'px';
 
         if (self.resizable) {
-            self.resizeHint.innerHTML = self.width + '&times;' + self.height;
+            resizeHint.innerHTML = self.width + '&times;' + self.height;
         }
         
         return self;
     };
+    
+    this.setContent = function(value) {
+        content.innerHTML = value;
+        textarea.value = value;
+        return self;
+    }
 
     /**
      *  Outputs view as HTML string.
@@ -380,8 +387,8 @@ JBNLayout.View = function(layout, options) {
             for (i = 0, len = self.views.length; i < len; i++) {
                 html.push(self.views[i].toHTML());
             }
-        } else if (self.content) {
-            html.push(self.content.innerHTML);
+        } else if (content) {
+            html.push(content.innerHTML);
         }
 
         html.push('</div>');
@@ -394,20 +401,26 @@ JBNLayout.View = function(layout, options) {
      *  @return {Object}
     **/
     this.toJSON = function() {
-        var json, i, len, subviews = [];
+        var json = {}, i, len, subviews = [];
 
         for (i = 0, len = self.views.length; i < len; i++) {
             subviews.push(self.views[i].toJSON());
         }
-
-        json = {
-            x: self.x,
-            y: self.y,
-            z: self.z,
-            width: self.width,
-            height: self.height,
-            views: subviews
-        };
+        
+        for (property in self) {
+            if (self.hasOwnProperty(property) &&
+                typeof self[property] !== 'function') {
+                json[property] = self[property];
+            }
+        }
+        
+        if (content) {
+            json.content = content.innerHTML;
+        }
+        
+        json.views = subviews;
+        delete json.superview;
+        delete json.node;
 
         return json;
     };

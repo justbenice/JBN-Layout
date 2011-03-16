@@ -15,5 +15,20 @@ JBNLayout.Helpers = {
         }
 
         return element;
+    },
+    clone: function(obj) {
+        var clone = {};
+        
+        for (var i in obj) {
+            if (obj.hasOwnProperty(i)) {
+                if (typeof(obj[i])=="object") {
+                    clone[i] = JBNLayout.Helpers.clone(obj[i]);
+                } else {
+                    clone[i] = obj[i];
+                }
+            }
+        }
+        
+        return clone;
     }
 };
