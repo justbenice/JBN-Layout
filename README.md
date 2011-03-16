@@ -15,7 +15,7 @@ Add view on double click:
         layout.onDrop(e, layout.view, layout);
     });
 
-Create view on dropped files:
+Create view:
 
     layout.onDrop = function(e, view, layout) {
         view.add(layout, {
