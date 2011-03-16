@@ -52,4 +52,4 @@ Export:
     
 Import:
     
-    layout.fromJSON();
+    layout.fromJSON(json);
