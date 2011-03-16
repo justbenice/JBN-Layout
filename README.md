@@ -1,3 +1,5 @@
+Create new layout application:
+
     var layout = new JBNLayout.Application(document.getElementsByTagName('div')[0], {
         width: 400,
         height: 300,
@@ -7,9 +9,13 @@
         snapSize: true
     });
 
+Add view on double click:
+
     layout.view.node.addEventListener('dblclick', function(e) {
         layout.onDrop(e, layout.view, layout);
     });
+
+Create view on dropped files:
 
     layout.onDrop = function(e, view, layout) {
         view.add(layout, {
@@ -22,6 +28,8 @@
             resizable: true
         });
     }
+
+Define shortcuts:
 
     var shortcuts = new JBNLayout.Shortcuts();
 
