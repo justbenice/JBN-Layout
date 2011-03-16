@@ -1,40 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" href="../css/layout.css" type="text/css" media="screen" />
-	<link rel="stylesheet" href="../css/style.css" type="text/css" media="screen" />
-	<script src="../src/layout.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../src/helpers.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../src/shortcuts.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../src/view.js" type="text/javascript" charset="utf-8"></script>
-	<script src="../src/application.js" type="text/javascript" charset="utf-8"></script>
+    <title></title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/layout.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../css/style.css" type="text/css" media="screen" />
+    <script src="../src/layout.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../src/helpers.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../src/shortcuts.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../src/view.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../src/application.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
 
 <div></div>
 
 <script type="text/javascript" charset="utf-8">
-new JBNLayout.Application(document.getElementsByTagName('div')[0], {
-	width: 400,
-	height: 300,
-	draggable: true,
-	resizable: true,
-	droppable: true,
-	snapSize: true
+var layout = new JBNLayout.Application(document.getElementsByTagName('div')[0], {
+    width: 400,
+    height: 300,
+    draggable: true,
+    resizable: true,
+    droppable: true,
+    snapSize: true
 });
 
-layout.view.add({
-	width: 100,
-	height: 100,
-	x: 50,
-	y: 50,
-	editable: true,
-	draggable: true,
-	resizable: true
+layout.view.node.addEventListener('dblclick', function(e) {
+    layout.onDrop(e, layout.view, layout);
+});
+
+layout.onDrop = function(e, view, layout) {
+    view.add(layout, {
+        x: e.clientX - view.x,
+        y: e.clientY - view.y,
+        width: 100,
+        height: 100,
+        draggable: true,
+        editable: true,
+        resizable: true
+    });
+}
+
+var shortcuts = new JBNLayout.Shortcuts();
+
+shortcuts.add('keydown', 'delete', function(e) {
+    layout.withSelected('remove');
+});
+
+shortcuts.add('keydown', 'space', function(e) {
+    layout.view.lock = true;
+});
+
+shortcuts.add('keyup', 'space', function(e) {
+    layout.view.lock = false;
 });
 </script>
-	
+
 </body>
 </html>
