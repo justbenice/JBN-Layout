@@ -1,6 +1,6 @@
 Create new layout application:
 
-    var layout = new JBNLayout.Application(document.getElementsByTagName('div')[0], {
+    var layout = new JBNLayout.Application(div, {
         width: 400,
         height: 300,
         draggable: true,
