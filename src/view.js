@@ -1,6 +1,6 @@
 /**
  *  @constructor
- *  @param {JBNLayout.Application} layout Layout which this view belongs to.
+ *  @param {JBN.Layout.Application} layout Layout which this view belongs to.
  *  @param {Object} options View options.
  *  Every option becomes a public property after intializing.
  *  Possible options:
@@ -17,18 +17,27 @@
  *  - snapPosition {Boolean} Snap view position to gird.
  *  
  *  @property {HTMLElement} node Container node.
- *  @property {JBNLayout.View} superview A view where current view is placed.
+ *  @property {JBN.Layout.View} superview A view where current view is placed.
  *  @property {Array} views Child views.
  *  @property {Number} depth Heighest subview zIndex.
  *  @property {Boolean} dragging
  *  @property {Boolean} resizing
 **/
 
-JBNLayout.View = function(layout, options) {
+JBN.Layout.View = function(layout, options) {
     var self = this,
         dragStart, resStart,
         resizeHint, content, textarea,
         lock = false,
+
+    dragEventListeners = function(action) {
+        action = action === 'add' ? 'addEventListener' : 'removeEventListener';
+        
+        self.node[action]('mousedown', mousedown, false);
+        document[action]('mousemove', mousemove, false);
+        document[action]('mouseup', mouseup, false);
+        document[action]('keydown', mouseup, false);
+    },
 
     stopPropagation = function(e) {
         if (self.width - e.layerX < 16 && self.height - e.layerY < 16) {
@@ -171,7 +180,7 @@ JBNLayout.View = function(layout, options) {
 
     snap = function() {
         var snap = function(v) {
-            var grid = layout.getGrid() || 20;
+            var grid = layout.grid || 10;
             return Math.floor(v / grid) * grid;
         };
 
@@ -191,15 +200,10 @@ JBNLayout.View = function(layout, options) {
     this.z = 0;
     this.width = 0;
     this.height = 0;
-    this.editable = false;
-    this.draggable = false;
-    this.resizable = false;
     this.resizeProportionally = false;
     this.droppable = false;
     this.snapSize = false;
     this.snapPosition = false;
-    
-    JBNLayout.Helpers.inject(this, options);
 
     this.node = document.createElement('div');
     this.node.className = 'view';
@@ -210,44 +214,10 @@ JBNLayout.View = function(layout, options) {
 
     this.dragging = false;
     this.resizing = false;
-
-    if (this.editable) {
-        content = document.createElement('div');
-        content.className = 'content';
-        content.addEventListener('dblclick', dblclick, false);
-
-        textarea = document.createElement('textarea');
-        textarea.style.display = 'none';
-        textarea.addEventListener('blur', blur, false);
-
-        this.node.appendChild(content);
-        this.node.appendChild(textarea);
-    }
-
-    if (this.draggable || this.resizable) {
-        if (this.resizable) {
-            resizeHint = document.createElement('div');
-            resizeHint.className = 'resize-hint';
-            resizeHint.style.display = 'none';
-
-            this.node.setAttribute('data-resizable', true);
-            this.node.appendChild(resizeHint);
-        }
-
-        this.node.addEventListener('mousedown', mousedown, false);
-        document.addEventListener('mousemove', mousemove, false);
-        document.addEventListener('mouseup', mouseup, false);
-        document.addEventListener('keydown', mouseup, false);
-    }
-
-    if (this.droppable) {
-        this.node.addEventListener('dragover', dragover, false);
-        this.node.addEventListener('drop', drop, false);
-    }
-
+    
     /**
      *  Prevents propagation of mouse events to subviews.
-     *  @return {JBNLayout.View}
+     *  @return {JBN.Layout.View}
     **/
     this.lock = function() {
         lock = true;
@@ -255,7 +225,7 @@ JBNLayout.View = function(layout, options) {
     };
 
     /**
-     *  @return {JBNLayout.View}
+     *  @return {JBN.Layout.View}
     **/
     this.unlock = function() {
         lock = false;
@@ -270,17 +240,17 @@ JBNLayout.View = function(layout, options) {
     };
 
     /**
-     *  Adds new JBNLayout.View to view.
-     *  @param {JBNLayout.Application} layout Layout which this view belongs to.
+     *  Adds new JBN.Layout.View to view.
+     *  @param {JBN.Layout.Application} layout Layout which this view belongs to.
      *  @param {Object} options
-     *  @see JBNLayout.View
+     *  @see JBN.Layout.View
     **/
     this.add = function(layout, options) {
         var view;
 
         options.z = self.depth++;
 
-        view = new JBNLayout.View(layout, options);
+        view = new JBN.Layout.View(layout, options);
         view.superview = self;
 
         self.views.push(view);
@@ -291,7 +261,7 @@ JBNLayout.View = function(layout, options) {
 
     /**
      *  Selects view.
-     *  @return {JBNLayout.View}
+     *  @return {JBN.Layout.View}
     **/
     this.select = function() {
         layout.withSelected('deselect');
@@ -309,7 +279,7 @@ JBNLayout.View = function(layout, options) {
 
     /**
      *  Deselects view.
-     *  @return {JBNLayout.View}
+     *  @return {JBN.Layout.View}
     **/
     this.deselect = function() {
         if (self.editable) {
@@ -332,6 +302,7 @@ JBNLayout.View = function(layout, options) {
         self.deselect();
 
         if (self.superview) {
+            dragEventListeners('remove');
             superviewIndex = self.superview.views.indexOf(self);
             self.superview.views.splice(superviewIndex, 1);
             self.superview.node.removeChild(self.node);
@@ -343,7 +314,7 @@ JBNLayout.View = function(layout, options) {
 
     /**
      *  Updates view node dimensions after changes.
-     *  @return {JBNLayout.View}
+     *  @return {JBN.Layout.View}
     **/
     this.update = function() {
         snap();
@@ -424,6 +395,132 @@ JBNLayout.View = function(layout, options) {
 
         return json;
     };
+    
+    Object.defineProperty(self, 'editable', {
+        set: function(value) {
+            var changed = self._editable !== value,
+                html;
+            
+            if (!changed) {
+                return;
+            }
+            
+            self._editable = value;
+
+            if (self.editable) {
+                html = self.node.innerHTML;
+                self.node.innerHTML = '';
+                
+                content = document.createElement('div');
+                content.className = 'content';
+                content.addEventListener('dblclick', dblclick, false);
+                self.node.appendChild(content);
+
+                textarea = document.createElement('textarea');
+                textarea.style.display = 'none';
+                textarea.addEventListener('blur', blur, false);
+                self.node.appendChild(textarea);
+                
+                self.setContent(html);
+            } else {
+                html = content.innerHTML;
+                
+                content.removeEventListener('dblclick', dblclick);
+                self.node.removeChild(content);
+                
+                textarea.removeEventListener('blur', blur, false);
+                self.node.removeChild(textarea);
+                
+                self.node.innerHTML = html;
+            }
+        },
+        get: function() {
+            return self._editable;
+        }
+    });
+    
+    Object.defineProperty(self, 'draggable', {
+        set: function(value) {
+            var changed = self._draggable !== value;
+            
+            if (!changed) {
+                return;
+            }
+            
+            self._draggable = value;
+
+            if (self.draggable && !self.resizable) {
+                dragEventListeners('add');
+            }
+
+            if (!self.draggable && !self.resizable) {
+                dragEventListeners('remove');
+            }
+        },
+        get: function() {
+            return self._draggable;
+        }
+    });
+    
+    Object.defineProperty(self, 'resizable', {
+        set: function(value) {
+            var changed = self._resizable !== value;
+            
+            if (!changed) {
+                return;
+            }
+            
+            self._resizable = value;
+
+            if (self.resizable) {
+                resizeHint = document.createElement('div');
+                resizeHint.className = 'resize-hint';
+                resizeHint.style.display = 'none';
+
+                self.node.setAttribute('data-resizable', true);
+                self.node.appendChild(resizeHint);
+            } else {
+                self.node.removeAttribute('data-resizable');
+                self.node.removeChild(resizeHint);
+            }
+
+            if (self.resizable && !self.draggable) {
+                dragEventListeners('add');
+            }
+
+            if (!self.resizable && !self.draggable) {
+                dragEventListeners('remove');
+            }
+        },
+        get: function() {
+            return self._resizable;
+        }
+    });
+    
+    Object.defineProperty(self, 'droppable', {
+        set: function(value) {
+            var changed = self._droppable !== value;
+            
+            if (!changed) {
+                return;
+            }
+            
+            self._droppable = value;
+
+            if (self.droppable) {
+                self.node.addEventListener('dragover', dragover, false);
+                self.node.addEventListener('drop', drop, false);
+            } else {
+                self.node.removeEventListener('dragover', dragover);
+                self.node.removeEventListener('drop', drop);
+            }
+        },
+        get: function() {
+            return self._resizable;
+        }
+    });
+    
+    JBN.Layout.Helpers.inject(this, options);
 
     this.update();
 };

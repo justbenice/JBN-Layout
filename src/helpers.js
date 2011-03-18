@@ -1,10 +1,12 @@
-JBNLayout.Helpers = {
+JBN.Layout.Helpers = {
     inject: function(target, source) {
         for (property in source) {
             if (target.hasOwnProperty(property)) {
                 target[property] = source[property];
             }
         }
+        
+        return target;
     },
     addClassName: function(element, className) {
         var classNames = element.className.split(' ');
@@ -22,7 +24,7 @@ JBNLayout.Helpers = {
         for (var i in obj) {
             if (obj.hasOwnProperty(i)) {
                 if (typeof(obj[i])=="object") {
-                    clone[i] = JBNLayout.Helpers.clone(obj[i]);
+                    clone[i] = JBN.Layout.Helpers.clone(obj[i]);
                 } else {
                     clone[i] = obj[i];
                 }

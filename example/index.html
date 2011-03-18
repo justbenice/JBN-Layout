@@ -16,7 +16,7 @@
 <div></div>
 
 <script type="text/javascript" charset="utf-8">
-var layout = new JBNLayout.Application(document.getElementsByTagName('div')[0], {
+var layout = new JBN.Layout.Application(document.getElementsByTagName('div')[0], {
     width: 400,
     height: 300,
     draggable: true,
@@ -29,7 +29,7 @@ layout.view.node.addEventListener('dblclick', function(e) {
     layout.onDrop(e, layout.view, layout);
 });
 
-layout.onDrop = function(e, view, layout) {
+layout.onDrop = function(e, view, layout) {    
     view.add(layout, {
         x: e.clientX - view.x,
         y: e.clientY - view.y,
@@ -41,7 +41,7 @@ layout.onDrop = function(e, view, layout) {
     });
 }
 
-var shortcuts = new JBNLayout.Shortcuts();
+var shortcuts = new JBN.Layout.Shortcuts();
 
 shortcuts.add('keydown', 'delete', function(e) {
     layout.withSelected('remove');

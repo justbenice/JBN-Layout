@@ -2,20 +2,20 @@
  *  @constructor
  *  @param {HTMLElement} node Container node.
  *  @param {Object} options Superview options.
- *  @see JBNLayout.View
+ *  @see JBN.Layout.View
  *  @property {HTMLElement} node Container node.
- *  @property {JBNLayout.View} view Layout root superview.
+ *  @property {JBN.Layout.View} view Layout root superview.
 **/
-JBNLayout.Application = function(node, options) {
+JBN.Layout.Application = function(node, options) {
     var self = this,
-        i, len, grid = 10,
+        i, len,
         
     superview = function(options) {
-        self.view = new JBNLayout.View(self, options);
+        self.view = new JBN.Layout.View(self, options);
         self.node.appendChild(self.view.node);
 
-        JBNLayout.Helpers.addClassName(self.node, 'layout');
-        JBNLayout.Helpers.addClassName(self.view.node, 'superview');
+        JBN.Layout.Helpers.addClassName(self.node, 'layout');
+        JBN.Layout.Helpers.addClassName(self.view.node, 'superview');
         
         self.toHTML = self.view.toHTML;
         self.toJSON = self.view.toJSON;
@@ -26,35 +26,11 @@ JBNLayout.Application = function(node, options) {
     mousedown = function(e) {
         self.withSelected('deselect');
     };
-
+    
     /**
-     *  @return {Number} Snapping grid size.
-    **/
-    this.getGrid = function() {
-        return grid;
-    };
-
-    /**
-     *  Sets new grid size.
-     *  @param {Number} value Grid size.
-     *  @return {Number} Grid size (default is 10).
-    **/
-    this.setGrid = function(value) {
-        grid = value;
-
-        if (self.view) {
-            self.withEach(function(view) {
-                view.update();
-            });
-        }
-
-        return self.getGrid();
-    };
-
-    /**
-     *  Executes specified method of currently selected JBNLayout.View
+     *  Executes specified method of currently selected JBN.Layout.View
      *  @param {String} methodName
-     *  @return {JBNLayout.View} Selected view.
+     *  @return {JBN.Layout.View} Selected view.
     **/
     this.withSelected = function(methodName) {
         if (self.selected) {
@@ -65,9 +41,9 @@ JBNLayout.Application = function(node, options) {
     };
 
     /**
-     *  Executes specified function with every registred JBNLayout.View
+     *  Executes specified function with every registred JBN.Layout.View
      *  @param {Function} action
-     *  @return {JBNLayout.Application}
+     *  @return {JBN.Layout.Application}
     **/
     this.withEach = function(action) {
         collect = function(view) {
@@ -87,6 +63,49 @@ JBNLayout.Application = function(node, options) {
         return self;
     };
     
+    this.fromHTML = function(html) {
+        var parser = new DOMParser(),
+            doc = parser.parseFromString(html, 'text/xml'),
+            node, options, subview;
+            
+        add = function(from, to) {
+            if (from.nodeType !== 1) {
+                return;
+            }
+            
+            node = document.createElement('div');
+            node.style.cssText = from.getAttribute('style');
+            
+            options = {
+                x: parseInt(node.style.left, 10),
+                y: parseInt(node.style.top, 10),
+                z: parseInt(node.style.zIndex, 10),
+                width: parseInt(node.style.width, 10),
+                height: parseInt(node.style.height, 10)
+            };
+            
+            if (to) {
+                subview = to.add(layout, options);
+            } else {
+                subview = superview(options);
+            }
+            
+            for (i = 0, len = from.childNodes.length; i < len; i++) {                
+                add(from.childNodes[i], subview);
+            }
+        };
+        
+        if (doc.firstChild.nodeType === 1) {
+            self.withEach(function(view) {
+                view.remove();
+            });
+            
+            self.view.node.parentNode.removeChild(self.view.node);
+            
+            add(doc.firstChild);
+        }
+    };
+    
     this.fromJSON = function(json) {
         if (typeof json === 'string') {
             json = JSON.parse(json);
@@ -95,7 +114,7 @@ JBNLayout.Application = function(node, options) {
         var options, subview,
         
         add = function(from, to) {
-            options = JBNLayout.Helpers.clone(from);
+            options = JBN.Layout.Helpers.clone(from);
             delete options.views;
             delete options.content;
             
@@ -129,6 +148,27 @@ JBNLayout.Application = function(node, options) {
         this.node = node;
         superview(options);
     }
+    
+    Object.defineProperty(self, 'grid', {
+        set: function(value) {
+            var changed = self._grid !== value;
+            
+            if (!changed) {
+                return;
+            }
+            
+            self._grid = value;
+
+            if (self.view) {
+                self.withEach(function(view) {
+                    view.update();
+                });
+            }
+        },
+        get: function() {
+            return self._grid;
+        }
+    });
 
     document.addEventListener('mousedown', mousedown, false);
 };

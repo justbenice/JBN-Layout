@@ -1,1 +1,3 @@
-var JBNLayout = {};
+var JBN = JBN || {};
+
+JBN.Layout = {};

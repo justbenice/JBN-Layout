@@ -1,6 +1,6 @@
 Create new layout application:
 
-    var layout = new JBNLayout.Application(div, {
+    var layout = new JBN.Layout.Application(div, {
         width: 400,
         height: 300,
         draggable: true,
@@ -31,7 +31,7 @@ Create view:
 
 Define shortcuts:
 
-    var shortcuts = new JBNLayout.Shortcuts();
+    var shortcuts = new JBN.Layout.Shortcuts();
 
     shortcuts.add('keydown', 'delete', function(e) {
         layout.withSelected('remove');

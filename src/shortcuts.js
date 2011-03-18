@@ -1,4 +1,4 @@
-JBNLayout.Shortcuts = function() {
+JBN.Layout.Shortcuts = function() {
     var self = this, i, len,
 
     modifiers = {
