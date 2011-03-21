@@ -1,8 +1,13 @@
 JBN.Layout.Helpers = {
     inject: function(target, source) {
+        var valid = function(value) {
+            return !isNaN(value);
+        }
+        
         for (property in source) {
             if (target.hasOwnProperty(property) && 
-                    source.hasOwnProperty(property)) {
+                    source.hasOwnProperty(property) &&
+                        valid(source[property])) {
                 target[property] = source[property];
             }
         }
