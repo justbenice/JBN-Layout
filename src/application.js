@@ -77,7 +77,12 @@ JBN.Layout.Application = function(node, options) {
         html = html.replace(/\t|\s\s+|\n/gi, '');
         
         var parser = new DOMParser(),
-            doc = parser.parseFromString(html, 'text/xml');
+            serializer = new XMLSerializer();
+            doc = parser.parseFromString(html, 'text/xml'),
+        
+        serialize = function(n) {
+            return serializer.serializeToString(n);
+        },
 
         add = function(from, to) {
             var node, subview, options, hasSubviews;
@@ -112,7 +117,7 @@ JBN.Layout.Application = function(node, options) {
                     add(from.childNodes[i], subview);
                 }
             } else {
-                subview.node.innerHTML = from.childNodes[0].nodeValue;
+                subview.node.innerHTML = serialize(from.firstChild);
             }
         };
 
