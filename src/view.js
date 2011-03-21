@@ -15,7 +15,7 @@
  *  - droppable {Boolean} Drop files onto view.
  *  - snapSize {Boolean} Snap view size to grid.
  *  - snapPosition {Boolean} Snap view position to gird.
- *  
+ *
  *  @property {HTMLElement} node Container node.
  *  @property {JBN.Layout.View} superview A view where current view is placed.
  *  @property {Array} views Child views.
@@ -32,7 +32,7 @@ JBN.Layout.View = function(layout, options) {
 
     dragEventListeners = function(action) {
         action = action === 'add' ? 'addEventListener' : 'removeEventListener';
-        
+
         self.node[action]('mousedown', mousedown, false);
         document[action]('mousemove', mousemove, false);
         document[action]('mouseup', mouseup, false);
@@ -58,8 +58,8 @@ JBN.Layout.View = function(layout, options) {
         textarea.focus();
 
         textarea.setSelectionRange(cursor, cursor);
-        textarea.addEventListener('mousedown', stopPropagation);
-        textarea.addEventListener('keydown', stopPropagation);
+        textarea.addEventListener('mousedown', stopPropagation, false);
+        textarea.addEventListener('keydown', stopPropagation, false);
 
         e.stopPropagation();
         e.preventDefault();
@@ -70,8 +70,8 @@ JBN.Layout.View = function(layout, options) {
         content.innerHTML = textarea.value;
 
         textarea.style.display = 'none';
-        textarea.removeEventListener('mousedown', stopPropagation);
-        textarea.removeEventListener('keydown', stopPropagation);
+        textarea.removeEventListener('mousedown', stopPropagation, false);
+        textarea.removeEventListener('keydown', stopPropagation, false);
     },
 
     mousedown = function(e) {
@@ -214,7 +214,7 @@ JBN.Layout.View = function(layout, options) {
 
     this.dragging = false;
     this.resizing = false;
-    
+
     /**
      *  Prevents propagation of mouse events to subviews.
      *  @return {JBN.Layout.View}
@@ -273,7 +273,7 @@ JBN.Layout.View = function(layout, options) {
 
         self.node.setAttribute('data-selected', true);
         self.update();
-        
+
         return self;
     };
 
@@ -288,7 +288,7 @@ JBN.Layout.View = function(layout, options) {
 
         layout.selected = null;
         self.node.removeAttribute('data-selected');
-        
+
         return self;
     };
 
@@ -328,10 +328,10 @@ JBN.Layout.View = function(layout, options) {
         if (self.resizable) {
             resizeHint.innerHTML = self.width + '&times;' + self.height;
         }
-        
+
         return self;
     };
-    
+
     this.setContent = function(value) {
         content.innerHTML = value;
         textarea.value = value;
@@ -377,40 +377,40 @@ JBN.Layout.View = function(layout, options) {
         for (i = 0, len = self.views.length; i < len; i++) {
             subviews.push(self.views[i].toJSON());
         }
-        
+
         for (property in self) {
             if (self.hasOwnProperty(property) &&
                 typeof self[property] !== 'function') {
                 json[property] = self[property];
             }
         }
-        
+
         if (content) {
             json.content = content.innerHTML;
         }
-        
+
         json.views = subviews;
         delete json.superview;
         delete json.node;
 
         return json;
     };
-    
+
     Object.defineProperty(self, 'editable', {
         set: function(value) {
             var changed = self._editable !== value,
                 html;
-            
+
             if (!changed) {
                 return;
             }
-            
+
             self._editable = value;
 
             if (self.editable) {
                 html = self.node.innerHTML;
                 self.node.innerHTML = '';
-                
+
                 content = document.createElement('div');
                 content.className = 'content';
                 content.addEventListener('dblclick', dblclick, false);
@@ -420,17 +420,17 @@ JBN.Layout.View = function(layout, options) {
                 textarea.style.display = 'none';
                 textarea.addEventListener('blur', blur, false);
                 self.node.appendChild(textarea);
-                
+
                 self.setContent(html);
             } else {
                 html = content.innerHTML;
-                
-                content.removeEventListener('dblclick', dblclick);
+
+                content.removeEventListener('dblclick', dblclick, false);
                 self.node.removeChild(content);
-                
+
                 textarea.removeEventListener('blur', blur, false);
                 self.node.removeChild(textarea);
-                
+
                 self.node.innerHTML = html;
             }
         },
@@ -438,15 +438,15 @@ JBN.Layout.View = function(layout, options) {
             return self._editable;
         }
     });
-    
+
     Object.defineProperty(self, 'draggable', {
         set: function(value) {
             var changed = self._draggable !== value;
-            
+
             if (!changed) {
                 return;
             }
-            
+
             self._draggable = value;
 
             if (self.draggable && !self.resizable) {
@@ -461,15 +461,15 @@ JBN.Layout.View = function(layout, options) {
             return self._draggable;
         }
     });
-    
+
     Object.defineProperty(self, 'resizable', {
         set: function(value) {
             var changed = self._resizable !== value;
-            
+
             if (!changed) {
                 return;
             }
-            
+
             self._resizable = value;
 
             if (self.resizable) {
@@ -496,30 +496,30 @@ JBN.Layout.View = function(layout, options) {
             return self._resizable;
         }
     });
-    
+
     Object.defineProperty(self, 'droppable', {
         set: function(value) {
             var changed = self._droppable !== value;
-            
+
             if (!changed) {
                 return;
             }
-            
+
             self._droppable = value;
 
             if (self.droppable) {
                 self.node.addEventListener('dragover', dragover, false);
                 self.node.addEventListener('drop', drop, false);
             } else {
-                self.node.removeEventListener('dragover', dragover);
-                self.node.removeEventListener('drop', drop);
+                self.node.removeEventListener('dragover', dragover, false);
+                self.node.removeEventListener('drop', drop, false);
             }
         },
         get: function() {
             return self._resizable;
         }
     });
-    
+
     JBN.Layout.Helpers.inject(this, options);
 
     this.update();

@@ -5,7 +5,7 @@ JBN.Layout.Helpers = {
                 target[property] = source[property];
             }
         }
-        
+
         return target;
     },
     addClassName: function(element, className) {
@@ -20,17 +20,24 @@ JBN.Layout.Helpers = {
     },
     clone: function(obj) {
         var clone = {};
-        
+
         for (var i in obj) {
             if (obj.hasOwnProperty(i)) {
-                if (typeof(obj[i])=="object") {
+                if (typeof(obj[i]) == 'object') {
                     clone[i] = JBN.Layout.Helpers.clone(obj[i]);
                 } else {
                     clone[i] = obj[i];
                 }
             }
         }
-        
+
         return clone;
     }
 };
+
+if (!Object.prototype.defineProperty) {
+    Object.prototype.defineProperty = function(object, property, methods) {
+        object.__defineGetter__(property, methods.get);
+        object.__defineSetter__(property, methods.set);
+    };
+}

@@ -49,7 +49,11 @@ JBN.Layout.Shortcuts = function() {
 
     key = function(e) {
         var shortcut, sameType, sameKey, sameModifier;
-
+        
+        if (!e.keyIdentifier) {
+            e.keyIdentifier = toHex(String.fromCharCode(e.keyCode));
+        }
+        
         for (i = 0, len = self.shortcuts.length; i < len; i++) {
             shortcut = self.shortcuts[i];
             sameType = shortcut.type === e.type;

@@ -27,7 +27,7 @@ var layout = new JBN.Layout.Application(document.getElementsByTagName('div')[0],
 
 layout.view.node.addEventListener('dblclick', function(e) {
     layout.onDrop(e, layout.view, layout);
-});
+}, false);
 
 layout.onDrop = function(e, view, layout) {    
     view.add(layout, {
