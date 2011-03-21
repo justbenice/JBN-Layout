@@ -98,7 +98,7 @@ JBN.Layout.View = function(layout, options) {
         selfX = self.width - e.layerX;
         selfY = self.height - e.layerY;
 
-        if (options.resizable && selfX < 16 && selfY < 16) {
+        if (self.resizable && selfX < 16 && selfY < 16) {
             self.resizing = true;
 
             resStart = {
@@ -111,7 +111,7 @@ JBN.Layout.View = function(layout, options) {
             resizeHint.style.display = 'block';
         }
 
-        if (!self.resizing && options.draggable) {
+        if (!self.resizing && self.draggable) {
             self.dragging = true;
 
             dragStart = {
