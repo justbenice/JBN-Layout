@@ -74,11 +74,11 @@ JBN.Layout.Application = function(node, options) {
      *  @return {JBN.Layout.Application}
     **/
     this.fromHTML = function(html) {
+        html = html.replace(/\t|\s\s+|\n/gi, '');
+        
         var parser = new DOMParser(),
             doc = parser.parseFromString(html, 'text/xml'),
             node, options, subview, hasSubviews;
-        
-        html = html.replace(/\t|\s\s+|\n/gi, '');
 
         add = function(from, to) {
             if (from.nodeType !== 1) {
