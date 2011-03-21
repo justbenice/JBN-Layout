@@ -76,7 +76,7 @@ JBN.Layout.Application = function(node, options) {
     this.fromHTML = function(html) {
         var parser = new DOMParser(),
             doc = parser.parseFromString(html, 'text/xml'),
-            node, options, subview;
+            node, options, subview, hasSubviews;
 
         add = function(from, to) {
             if (from.nodeType !== 1) {
@@ -99,9 +99,17 @@ JBN.Layout.Application = function(node, options) {
             } else {
                 subview = superview(options);
             }
-
-            for (i = 0, len = from.childNodes.length; i < len; i++) {
-                add(from.childNodes[i], subview);
+            
+            hasSubviews = from.childNodes[0].nodeName === 'div' &&
+                from.childNodes[0].getAttribute('class') &&
+                from.childNodes[0].getAttribute('class') === 'view';
+            
+            if (hasSubviews) {
+                for (i = 0, len = from.childNodes.length; i < len; i++) {
+                    add(from.childNodes[i], subview);
+                }
+            } else {
+                subview.node.innerHTML = from.childNodes[0].nodeValue;
             }
         };
 
