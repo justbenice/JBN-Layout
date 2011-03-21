@@ -1,7 +1,8 @@
 JBN.Layout.Helpers = {
     inject: function(target, source) {
         for (property in source) {
-            if (target.hasOwnProperty(property)) {
+            if (target.hasOwnProperty(property) && 
+                    source.hasOwnProperty(property)) {
                 target[property] = source[property];
             }
         }
