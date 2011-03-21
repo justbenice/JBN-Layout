@@ -77,12 +77,14 @@ JBN.Layout.Application = function(node, options) {
         var parser = new DOMParser(),
             doc = parser.parseFromString(html, 'text/xml'),
             node, options, subview, hasSubviews;
+        
+        html = html.replace(/\t|\s\s+|\n/gi, '');
 
         add = function(from, to) {
             if (from.nodeType !== 1) {
                 return;
             }
-
+            
             node = document.createElement('div');
             node.style.cssText = from.getAttribute('style');
 
