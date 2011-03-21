@@ -107,8 +107,6 @@ JBN.Layout.Application = function(node, options) {
 
         if (doc.firstChild.nodeType === 1) {
             self.node.innerHTML = '';
-            self.node.removeChild(self.view.node);
-
             add(doc.firstChild);
         }
 
@@ -149,8 +147,6 @@ JBN.Layout.Application = function(node, options) {
 
         if (json.views) {
             self.node.innerHTML = '';
-            self.node.removeChild(self.view.node);
-
             add(json);
         }
 
