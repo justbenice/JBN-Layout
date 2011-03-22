@@ -2,7 +2,7 @@ JBN.Layout.Helpers = {
     inject: function(target, source) {
         var valid = function(value) {
             return !isNaN(value);
-        }
+        };
         
         for (property in source) {
             if (target.hasOwnProperty(property) && 
@@ -41,7 +41,7 @@ JBN.Layout.Helpers = {
     }
 };
 
-if (!Object.prototype.defineProperty) {
+if (typeof Object.defineProperty === 'undefined') {
     Object.prototype.defineProperty = function(object, property, methods) {
         object.__defineGetter__(property, methods.get);
         object.__defineSetter__(property, methods.set);

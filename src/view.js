@@ -336,7 +336,7 @@ JBN.Layout.View = function(layout, options) {
         content.innerHTML = value;
         textarea.value = value;
         return self;
-    }
+    };
 
     /**
      *  Outputs view as HTML string.
