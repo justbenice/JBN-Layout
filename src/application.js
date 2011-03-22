@@ -105,7 +105,7 @@ JBN.Layout.Application = function(node, options) {
             };
 
             if (to) {
-                subview = to.add(layout, options);
+                subview = to.add(self, options);
             } else {
                 subview = superview(options);
             }
