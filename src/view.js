@@ -516,7 +516,7 @@ JBN.Layout.View = function(layout, options) {
             }
         },
         get: function() {
-            return self._resizable;
+            return self._droppable;
         }
     });
 
