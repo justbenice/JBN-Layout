@@ -141,9 +141,9 @@ JBN.Layout.Application = function(node, options) {
             json = JSON.parse(json);
         }
 
-        var options, subview,
-
-        add = function(from, to) {
+        var add = function(from, to) {
+            var options, subview;
+            
             options = JBN.Layout.Helpers.clone(from);
             delete options.views;
             delete options.content;
