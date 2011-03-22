@@ -119,7 +119,8 @@ JBN.Layout.Application = function(node, options) {
                     add(from.childNodes[i], subview);
                 }
             } else {
-                subview.node.innerHTML = serialize(from.firstChild);
+                subview.editable = true;
+                subview.setContent(serialize(from.firstChild));
             }
         };
 
@@ -155,11 +156,8 @@ JBN.Layout.Application = function(node, options) {
             }
 
             if (from.content) {
-                if (subview.editable) {
-                    subview.setContent(from.content);
-                } else {
-                    subview.node.innerHTML = from.content;
-                }
+                subview.editable = true;
+                subview.setContent(from.content);
             }
 
             for (var i = 0, len = from.views.length; i < len; i++) {

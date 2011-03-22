@@ -389,10 +389,6 @@ JBN.Layout.View = function(layout, options) {
                 json[property] = self[property];
             }
         }
-        
-        if (subviews.length === 0 && !content) {
-            json.content = self.node.innerHTML;
-        }
 
         if (content) {
             json.content = content.innerHTML;
