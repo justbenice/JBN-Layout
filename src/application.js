@@ -149,7 +149,7 @@ JBN.Layout.Application = function(node, options) {
             delete options.content;
 
             if (to) {
-                subview = to.add(layout, options);
+                subview = to.add(self, options);
             } else {
                 subview = superview(options);
             }
