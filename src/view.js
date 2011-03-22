@@ -27,7 +27,7 @@
 JBN.Layout.View = function(layout, options) {
     var self = this,
         dragStart, resStart,
-        resizeHint, content, textarea,
+        content, textarea,
         lock = false,
 
     dragEventListeners = function(action) {
@@ -107,8 +107,6 @@ JBN.Layout.View = function(layout, options) {
                 width: self.width,
                 height: self.height
             };
-
-            resizeHint.style.display = 'block';
         }
 
         if (!self.resizing && self.draggable) {
@@ -153,10 +151,6 @@ JBN.Layout.View = function(layout, options) {
 
         if (!(self.dragging || self.resizing) || preventLocked) {
             return;
-        }
-
-        if (self.resizable) {
-            resizeHint.style.display = 'none';
         }
 
         self.dragging = self.resizing = false;
@@ -324,10 +318,6 @@ JBN.Layout.View = function(layout, options) {
         self.node.style.zIndex = self.z;
         self.node.style.width = self.width + 'px';
         self.node.style.height = self.height + 'px';
-
-        if (self.resizable) {
-            resizeHint.innerHTML = Math.floor(self.width) + '&times;' + Math.floor(self.height);
-        }
         
         if (layout.onChange) {
             layout.onChange(self, layout);
@@ -481,15 +471,9 @@ JBN.Layout.View = function(layout, options) {
             self._resizable = value;
 
             if (self.resizable) {
-                resizeHint = document.createElement('div');
-                resizeHint.className = 'resize-hint';
-                resizeHint.style.display = 'none';
-
                 self.node.setAttribute('data-resizable', true);
-                self.node.appendChild(resizeHint);
             } else {
                 self.node.removeAttribute('data-resizable');
-                self.node.removeChild(resizeHint);
             }
 
             if (self.resizable && !self.draggable) {
