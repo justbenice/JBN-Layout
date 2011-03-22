@@ -72,6 +72,8 @@ JBN.Layout.View = function(layout, options) {
         textarea.style.display = 'none';
         textarea.removeEventListener('mousedown', stopPropagation, false);
         textarea.removeEventListener('keydown', stopPropagation, false);
+        
+        change();
     },
 
     mousedown = function(e) {
@@ -187,6 +189,12 @@ JBN.Layout.View = function(layout, options) {
             self.width = snap(self.width);
             self.height = snap(self.height);
         }
+    },
+    
+    change = function() {
+        if (layout.onChange) {
+            layout.onChange(self, layout);
+        }
     };
 
     this.x = 0;
@@ -250,9 +258,7 @@ JBN.Layout.View = function(layout, options) {
         self.views.push(view);
         self.node.appendChild(view.node);
         
-        if (layout.onChange) {
-            layout.onChange(self, layout);
-        }
+        change();
 
         return view;
     };
@@ -307,9 +313,7 @@ JBN.Layout.View = function(layout, options) {
             return true;
         }
         
-        if (layout.onChange) {
-            layout.onChange(self, layout);
-        }
+        change();
 
         return false;
     };
@@ -327,9 +331,7 @@ JBN.Layout.View = function(layout, options) {
         self.node.style.width = self.width + 'px';
         self.node.style.height = self.height + 'px';
         
-        if (layout.onChange) {
-            layout.onChange(self, layout);
-        }
+        change();
 
         return self;
     };
