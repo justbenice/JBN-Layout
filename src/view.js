@@ -249,6 +249,10 @@ JBN.Layout.View = function(layout, options) {
 
         self.views.push(view);
         self.node.appendChild(view.node);
+        
+        if (layout.onChange) {
+            layout.onChange(self, layout);
+        }
 
         return view;
     };
@@ -301,6 +305,10 @@ JBN.Layout.View = function(layout, options) {
             self.superview.views.splice(superviewIndex, 1);
             self.superview.node.removeChild(self.node);
             return true;
+        }
+        
+        if (layout.onChange) {
+            layout.onChange(self, layout);
         }
 
         return false;
