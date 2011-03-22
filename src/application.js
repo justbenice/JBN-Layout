@@ -74,10 +74,12 @@ JBN.Layout.Application = function(node, options) {
      *  @return {JBN.Layout.Application}
     **/
     this.fromHTML = function(html) {
-        html = html.replace(/\t|\s\s+|\n/gi, '');
+        html = html.replace(/\t|\n/gi, '')
+            .replace(/\>\s+\</gi, '><')
+            .replace(/\&nbsp\;/, '&#160;');
         
         var parser = new DOMParser(),
-            serializer = new XMLSerializer();
+            serializer = new XMLSerializer(),
             doc = parser.parseFromString(html, 'text/xml'),
         
         serialize = function(n) {
