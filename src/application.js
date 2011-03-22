@@ -155,7 +155,11 @@ JBN.Layout.Application = function(node, options) {
             }
 
             if (from.content) {
-                subview.setContent(from.content);
+                if (subview.editable) {
+                    subview.setContent(from.content);
+                } else {
+                    subview.node.innerHTML = from.content;
+                }
             }
 
             for (i = 0, len = from.views.length; i < len; i++) {
