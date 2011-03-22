@@ -155,8 +155,6 @@ JBN.Layout.Application = function(node, options) {
             }
 
             if (from.content) {
-                from.content = JBN.Layout.Helpers.unescapeHTML(from.content);
-                
                 if (subview.editable) {
                     subview.setContent(from.content);
                 } else {

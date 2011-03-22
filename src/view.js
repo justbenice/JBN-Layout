@@ -375,16 +375,17 @@ JBN.Layout.View = function(layout, options) {
         for (property in self) {
             if (self.hasOwnProperty(property) &&
                 typeof self[property] !== 'function') {
+                property = property.replace('_', '');
                 json[property] = self[property];
             }
         }
         
         if (subviews.length === 0 && !content) {
-            json.content = JBN.Layout.Helpers.escapeHTML(self.node.innerHTML);
+            json.content = self.node.innerHTML;
         }
 
         if (content) {
-            json.content = JBN.Layout.Helpers.escapeHTML(content.innerHTML);
+            json.content = content.innerHTML;
         }
 
         json.views = subviews;
