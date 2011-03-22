@@ -54,7 +54,7 @@ JBN.Layout.Shortcuts = function() {
             e.keyIdentifier = toHex(String.fromCharCode(e.keyCode));
         }
         
-        for (i = 0, len = self.shortcuts.length; i < len; i++) {
+        for (var i = 0, len = self.shortcuts.length; i < len; i++) {
             shortcut = self.shortcuts[i];
             sameType = shortcut.type === e.type;
             sameKey = shortcut.key === e.keyIdentifier.replace('U+', '');

@@ -56,7 +56,7 @@ JBN.Layout.Application = function(node, options) {
                 return;
             }
 
-            for (i = 0, len = view.views.length; i < len; i++) {
+            for (var i = 0, len = view.views.length; i < len; i++) {
                 action(view.views[i]);
                 collect(view.views[i]);
             }
@@ -115,7 +115,7 @@ JBN.Layout.Application = function(node, options) {
                 from.childNodes[0].getAttribute('class') === 'view';
             
             if (hasSubviews) {
-                for (i = 0, len = from.childNodes.length; i < len; i++) {
+                for (var i = 0, len = from.childNodes.length; i < len; i++) {
                     add(from.childNodes[i], subview);
                 }
             } else {
@@ -162,7 +162,7 @@ JBN.Layout.Application = function(node, options) {
                 }
             }
 
-            for (i = 0, len = from.views.length; i < len; i++) {
+            for (var i = 0, len = from.views.length; i < len; i++) {
                 add(from.views[i], subview);
             }
         };

@@ -359,7 +359,7 @@ JBN.Layout.View = function(layout, options) {
         html.push(tmp.join(''));
 
         if (self.views.length > 0) {
-            for (i = 0, len = self.views.length; i < len; i++) {
+            for (var i = 0, len = self.views.length; i < len; i++) {
                 html.push(self.views[i].toHTML());
             }
         } else if (content) {
@@ -378,7 +378,7 @@ JBN.Layout.View = function(layout, options) {
     this.toJSON = function() {
         var json = {}, i, len, subviews = [];
 
-        for (i = 0, len = self.views.length; i < len; i++) {
+        for (var i = 0, len = self.views.length; i < len; i++) {
             subviews.push(self.views[i].toJSON());
         }
 
