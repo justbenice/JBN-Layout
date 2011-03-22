@@ -326,7 +326,11 @@ JBN.Layout.View = function(layout, options) {
         self.node.style.height = self.height + 'px';
 
         if (self.resizable) {
-            resizeHint.innerHTML = self.width + '&times;' + self.height;
+            resizeHint.innerHTML = Math.floor(self.width) + '&times;' + Math.floor(self.height);
+        }
+        
+        if (layout.onChange) {
+            layout.onChange(self, layout);
         }
 
         return self;
