@@ -380,11 +380,11 @@ JBN.Layout.View = function(layout, options) {
         }
         
         if (subviews.length === 0 && !content) {
-            json.content = self.node.innerHTML;
+            json.content = JBN.Layout.Helpers.escapeHTML(self.node.innerHTML);
         }
 
         if (content) {
-            json.content = content.innerHTML;
+            json.content = JBN.Layout.Helpers.escapeHTML(content.innerHTML);
         }
 
         json.views = subviews;

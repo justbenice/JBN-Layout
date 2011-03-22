@@ -38,6 +38,12 @@ JBN.Layout.Helpers = {
         }
 
         return clone;
+    },
+    escapeHTML: function(source) {
+        return source.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    },
+    unescapeHTML: function(source) {
+        return source.stripTags().replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
     }
 };
 
