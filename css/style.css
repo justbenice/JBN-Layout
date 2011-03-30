@@ -25,8 +25,3 @@ html, body {
   outline: #64cdff 1px solid !important;
   outline-offset: 5px;
 }
-.view[data-selected][data-resizable] {
-  background-image: url('../images/resize-handle.png');
-  background-repeat: no-repeat;
-  background-position: bottom right;
-}

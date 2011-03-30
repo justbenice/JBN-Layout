@@ -28,6 +28,7 @@ JBN.Layout.View = function(layout, options) {
     var self = this,
         dragStart, resStart,
         content, textarea,
+        resizeThumb, closeButton,
         lock = false,
 
     dragEventListeners = function(action) {
@@ -77,8 +78,6 @@ JBN.Layout.View = function(layout, options) {
     },
 
     mousedown = function(e) {
-        var selfX, selfY,
-
         targetIsDescendant = function() {
             var nodes = self.node.getElementsByTagName(e.target.nodeName);
             nodes = Array.prototype.slice.call(nodes);
@@ -94,13 +93,15 @@ JBN.Layout.View = function(layout, options) {
                 return;
             }
         }
+        
+        if (e.target.className === 'close-button') {
+            self.remove();
+            return;
+        }
 
         self.select();
 
-        selfX = self.width - e.layerX;
-        selfY = self.height - e.layerY;
-
-        if (self.resizable && selfX < 16 && selfY < 16) {
+        if (self.resizable && e.target.className === 'resize-thumb') {
             self.resizing = true;
 
             resStart = {
@@ -216,6 +217,10 @@ JBN.Layout.View = function(layout, options) {
 
     this.dragging = false;
     this.resizing = false;
+    
+    closeButton = document.createElement('div');
+    closeButton.className = 'close-button';
+    this.node.appendChild(closeButton);
 
     /**
      *  Prevents propagation of mouse events to subviews.
@@ -478,8 +483,12 @@ JBN.Layout.View = function(layout, options) {
             self._resizable = value;
 
             if (self.resizable) {
+                resizeThumb = document.createElement('div');
+                resizeThumb.className = 'resize-thumb';
+                self.node.appendChild(resizeThumb);
                 self.node.setAttribute('data-resizable', true);
             } else {
+                self.node.removeChild(resizeThumb);
                 self.node.removeAttribute('data-resizable');
             }
 
