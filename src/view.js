@@ -382,7 +382,7 @@ JBN.Layout.View.prototype = {
     **/
     deselect: function() {
         if (this.editable) {
-            blur();
+            this.node.getElementsByTagName('textarea')[0].blur();
         }
 
         this.layout.selected = null;
