@@ -418,9 +418,6 @@ JBN.Layout.View = function(layout, options) {
             self._editable = value;
 
             if (self.editable) {
-                html = self.node.innerHTML;
-                self.node.innerHTML = '';
-
                 content = document.createElement('div');
                 content.className = 'content';
                 content.addEventListener('dblclick', dblclick, false);
@@ -430,18 +427,12 @@ JBN.Layout.View = function(layout, options) {
                 textarea.style.display = 'none';
                 textarea.addEventListener('blur', blur, false);
                 self.node.appendChild(textarea);
-
-                self.setContent(html);
             } else {
-                html = content.innerHTML;
-
                 content.removeEventListener('dblclick', dblclick, false);
                 self.node.removeChild(content);
 
                 textarea.removeEventListener('blur', blur, false);
                 self.node.removeChild(textarea);
-
-                self.node.innerHTML = html;
             }
         },
         get: function() {
