@@ -120,7 +120,7 @@ JBN.Layout.Application = function(node, options) {
                 }
             } else {
                 subview.editable = true;
-                subview.setContent(serialize(from.firstChild));
+                subview.content = serialize(from.firstChild);
             }
         };
 
@@ -157,7 +157,7 @@ JBN.Layout.Application = function(node, options) {
 
             if (from.content) {
                 subview.editable = true;
-                subview.setContent(from.content);
+                subview.content = from.content;
             }
 
             for (var i = 0, len = from.views.length; i < len; i++) {
