@@ -28,7 +28,6 @@ JBN.Layout.View = function(layout, options) {
     var self = this,
         dragStart, resStart,
         content, textarea,
-        resizeThumb, closeButton,
         lock = false,
 
     dragEventListeners = function(action) {
@@ -78,6 +77,8 @@ JBN.Layout.View = function(layout, options) {
     },
 
     mousedown = function(e) {
+        var selfX, selfY,
+
         targetIsDescendant = function() {
             var nodes = self.node.getElementsByTagName(e.target.nodeName);
             nodes = Array.prototype.slice.call(nodes);
@@ -93,15 +94,13 @@ JBN.Layout.View = function(layout, options) {
                 return;
             }
         }
-        
-        if (e.target.className === 'close-button') {
-            self.remove();
-            return;
-        }
 
         self.select();
 
-        if (self.resizable && e.target.className === 'resize-thumb') {
+        selfX = self.width - e.layerX;
+        selfY = self.height - e.layerY;
+
+        if (self.resizable && selfX < 16 && selfY < 16) {
             self.resizing = true;
 
             resStart = {
@@ -217,10 +216,6 @@ JBN.Layout.View = function(layout, options) {
 
     this.dragging = false;
     this.resizing = false;
-    
-    closeButton = document.createElement('div');
-    closeButton.className = 'close-button';
-    this.node.appendChild(closeButton);
 
     /**
      *  Prevents propagation of mouse events to subviews.
@@ -418,6 +413,9 @@ JBN.Layout.View = function(layout, options) {
             self._editable = value;
 
             if (self.editable) {
+                html = self.node.innerHTML;
+                self.node.innerHTML = '';
+
                 content = document.createElement('div');
                 content.className = 'content';
                 content.addEventListener('dblclick', dblclick, false);
@@ -427,12 +425,18 @@ JBN.Layout.View = function(layout, options) {
                 textarea.style.display = 'none';
                 textarea.addEventListener('blur', blur, false);
                 self.node.appendChild(textarea);
+
+                self.setContent(html);
             } else {
+                html = content.innerHTML;
+
                 content.removeEventListener('dblclick', dblclick, false);
                 self.node.removeChild(content);
 
                 textarea.removeEventListener('blur', blur, false);
                 self.node.removeChild(textarea);
+
+                self.node.innerHTML = html;
             }
         },
         get: function() {
@@ -474,12 +478,8 @@ JBN.Layout.View = function(layout, options) {
             self._resizable = value;
 
             if (self.resizable) {
-                resizeThumb = document.createElement('div');
-                resizeThumb.className = 'resize-thumb';
-                self.node.appendChild(resizeThumb);
                 self.node.setAttribute('data-resizable', true);
             } else {
-                self.node.removeChild(resizeThumb);
                 self.node.removeAttribute('data-resizable');
             }
 
