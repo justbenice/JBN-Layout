@@ -401,7 +401,6 @@ JBN.Layout.View.prototype = {
         this.deselect();
 
         if (this.superview) {
-            dragEventListeners('remove');
             superviewIndex = this.superview.views.indexOf(this);
             this.superview.views.splice(superviewIndex, 1);
             this.superview.node.removeChild(this.node);
