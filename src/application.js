@@ -22,8 +22,13 @@ JBN.Layout.Application = function(node, options) {
         JBN.Layout.Helpers.addClassName(self.node, 'layout');
         JBN.Layout.Helpers.addClassName(self.view.node, 'superview');
 
-        self.toHTML = self.view.toHTML;
-        self.toJSON = self.view.toJSON;
+        self.toHTML = function() {
+            return self.view.toHTML();
+        };
+        
+        self.toJSON = function() {
+            return self.view.toJSON();
+        };
 
         return self.view;
     },

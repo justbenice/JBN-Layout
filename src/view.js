@@ -476,7 +476,7 @@ JBN.Layout.View.prototype = {
                 html.push(this.views[i].toHTML());
             }
         } else if (content) {
-            html.push(content.innerHTML);
+            html.push(this.content);
         }
 
         html.push('</div>');
@@ -503,8 +503,8 @@ JBN.Layout.View.prototype = {
             }
         }
 
-        if (content) {
-            json.content = content.innerHTML;
+        if (this.content) {
+            json.content = this.content;
         }
 
         json.views = subviews;
