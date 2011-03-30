@@ -51,6 +51,9 @@ JBN.Layout.View = function(layout, options) {
 
     mousedown = function(e) {
         var selfX, selfY,
+            nodeOffset = offset(),
+            layerX = (e.clientX - nodeOffset.x),
+            layerY = (e.clientY - nodeOffset.y),
         
         targetIsDescendant = function() {
             var nodes = self.node.getElementsByTagName(e.target.nodeName);
@@ -69,9 +72,8 @@ JBN.Layout.View = function(layout, options) {
         }
         
         self.select();
-
-        selfX = self.width - e.layerX;
-        selfY = self.height - e.layerY;
+        selfX = self.width - layerX;
+        selfY = self.height - layerY;
 
         if (self.resizable && selfX < 16 && selfY < 16) {
             self.resizing = true;
@@ -145,7 +147,30 @@ JBN.Layout.View = function(layout, options) {
         }
 
         return false;
+    },
+    
+    // Taken from Prototype JS cumulativeOffset
+    offset = function() {        
+        var x = 0, y = 0,
+            node = self.node;
+        
+        if (node.parentNode) {
+            do {
+                x += node.offsetLeft || 0;
+                y += node.offsetTop || 0;
+                
+                if (node.parentNode !== document.body) {
+                    node = node.parentNode;
+                } else {
+                    node = false;
+                }
+            } while (node);
+        }
+        
+        return {x: x, y: y};
     };
+    
+    this.offset = offset;
     
     this.node = document.createElement('div');
     this.node.className = 'view';
