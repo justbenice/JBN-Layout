@@ -508,6 +508,7 @@ JBN.Layout.View.prototype = {
         }
 
         json.views = subviews;
+        delete json.layout;
         delete json.superview;
         delete json.node;
 
